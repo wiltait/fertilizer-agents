@@ -15,14 +15,20 @@
 # ============================================================
 
 from crewai import Task
+from datetime import datetime
 
+hoje = datetime.now()
+data_iso = hoje.strftime('%d/%m/%Y')
+data_atual = hoje.strftime("%B de %Y")
 
 # ==============================================================
 # TAREFA 1: PESQUISA DE MERCADO
 # Executada pelo: Analista de Mercado (News Scout)
 # ==============================================================
 def create_market_research_task(agent):
-    """
+    f"""
+    CONTEXTO TEMPORAL CRÍTICO: Hoje é dia {data_iso}. 
+    Sua missão é obter dados estritamente ATUAIS de mercado para {data_atual}
     Tarefa de coleta e análise de dados de mercado.
 
     O agente deve buscar preços atuais e tendências para
@@ -33,7 +39,10 @@ def create_market_research_task(agent):
     """
     return Task(
         description=(
-            """
+            
+            f"""CONTEXTO TEMPORAL CRÍTICO: Hoje é dia {data_atual}.
+            Sua missão é obter dados estritamente ATUAIS de mercado para {data_atual}.
+            
             Realize uma análise completa do mercado de MAP (Monoamônio Fosfato, 11-52-00)
             e Ureia (46% N) para o mercado brasileiro. Siga estes passos:
 
@@ -64,11 +73,11 @@ def create_market_research_task(agent):
             """
         ),
         expected_output=(
-            """
+            f"""
             Um relatório estruturado em Português contendo:
 
             ## RELATÓRIO DE MERCADO - MAP e UREIA
-            **Data da análise:** [data atual]
+            **Data da análise:** {data_iso}
 
             ### 1. Preços Internacionais (FOB)
             - MAP FOB Tampa: $XXX/t
@@ -156,11 +165,11 @@ def create_arbitrage_task(agent, context_tasks):
             """
         ),
         expected_output=(
-            """
+            f"""
             Um relatório financeiro detalhado contendo:
 
             ## ANÁLISE DE ARBITRAGEM - FERTILIZANTES
-            **Referência:** [data]
+            **Referência:** {data_iso}
 
             ### 1. Cálculo de Paridade - MAP
             | Item                          | USD/t    | R$/t      |
@@ -251,7 +260,7 @@ def create_communication_task(agent, context_tasks):
             """
         ),
         expected_output=(
-            """
+            f"""
             Dois documentos profissionais completos:
 
             ========================================
@@ -275,7 +284,7 @@ def create_communication_task(agent, context_tasks):
 
             **PROPOSTA COMERCIAL CONFIDENCIAL**
             **Ref:** [Número de referência]
-            **Data:** [Data]
+            **Data:** {data_iso}
             **Para:** Sr. Roberto Carvalho — AgroSul Distribuidora
 
             [Proposta completa em Português — 300-400 palavras]

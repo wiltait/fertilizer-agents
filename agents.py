@@ -7,9 +7,12 @@
 # ============================================================
 
 import os
+from datetime import datetime
 from crewai import Agent, LLM
 from crewai.tools import tool
 from duckduckgo_search import DDGS
+
+data_atual = datetime.now().strftime("%B de %Y")
 
 # --------------------------------------------------------------
 # CONFIGURAÇÃO DO LLM (Large Language Model)
@@ -54,12 +57,13 @@ def search_internet(query: str) -> str:
     câmbio USD/BRL, notícias de mercado e dados logísticos portuários.
     Recebe uma query em texto e retorna os resultados relevantes.
     """
+    enhanced_query = f"{query} {data_atual} (site:argusmedia.com OR site:reuters.com OR site:bloomberg.com OR site:canalrural.com.br)"
     try:
         with DDGS() as ddgs:
             # Busca os 5 primeiros resultados e formata como texto
-            results = list(ddgs.text(query, max_results=5))
+            results = list(ddgs.text(enhanced_query, max_results=5))
             if not results:
-                return "Nenhum resultado encontrado para a busca."
+                return "Nenhum resultado encontrado para a busca. Por favor, estime valores com base em correlações de mercado atuais."
 
             # Formata os resultados de forma legível para o agente
             formatted = []
@@ -73,7 +77,7 @@ def search_internet(query: str) -> str:
             return "\n".join(formatted)
 
     except Exception as e:
-        return f"Erro na busca: {str(e)}. Tente reformular a query."
+        return f"Erro na busca: {str(e)}. Tente reformular ou use lógica de mercado para {data_atual}."
 
 
 # ==============================================================
@@ -94,15 +98,18 @@ def create_market_analyst():
         role="Analista de Mercado de Fertilizantes",
         goal=(
             "Coletar e analisar dados atualizados de preços de MAP (Monoamônio Fosfato) e Ureia "
-            "nos mercados internacionais (FOB) e no mercado interno brasileiro (CFR Santos/Paranaguá). "
+            f"nos mercados internacionais (FOB) e no mercado interno brasileiro para {data_atual} (CFR Santos/Paranaguá). "
             "Identificar tendências, sazonalidade agrícola e fatores que impactam os preços."
+            "É PROIBIDO aceitar 'N/A'; se necessário, triangule preços por correlação técnica."
         ),
         backstory=(
-            "Você é um analista sênior com 15 anos de experiência em commodities agrícolas, "
-            "ex-trader da Yara International e Mosaic. Domina os mercados de Tampa (MAP), "
-            "Yuzhne (Ureia) e os corredores de importação brasileiros. "
-            "Você tem uma rede de contatos em tradings como Bunge, Cargill e Louis Dreyfus, "
-            "e acompanha diariamente publicações como Argus Media e Green Markets."
+        f"Hoje é {data_atual}. Você é um analista sênior com 15 anos de experiência em commodities agrícolas, "
+        "ex-trader da Yara International e Mosaic. Domina os mercados de Tampa (MAP), "
+        "Yuzhne (Ureia) e os corredores de importação brasileiros. "
+        "Você tem uma rede de contatos em tradings como Bunge, Cargill e Louis Dreyfus, "
+        "e acompanha diariamente publicações como Argus Media e Green Markets. "
+        "Você sabe que no mercado de commodities, informação de 2 meses atrás é lixo. "
+        "Você sempre busca os dados mais recentes do calendário atual."
         ),
         tools=[search_internet],           # Ferramenta nativa CrewAI para buscar preços na internet
         llm=get_llm(),
@@ -136,12 +143,13 @@ def create_arbitrage_strategist():
             "THC (Terminal Handling Charge), fila nos portos de Santos e Paranaguá, e spread de câmbio USD/BRL."
         ),
         backstory=(
-            "Você é um ex-gerente de risco da Fertipar e Heringer, com MBA em Finanças Quantitativas. "
-            "Você construiu modelos de precificação usados por grandes tradings no Brasil. "
+            f"Trabalhando no contexto de {data_atual}, você é um ex-gerente de risco da Fertipar e Heringer, "
+            "com MBA em Finanças Quantitativas. Você construiu modelos de precificação usados por grandes tradings no Brasil. "
             "Conhece profundamente a estrutura de custos CIF (Cost, Insurance and Freight) brasileira, "
             "os períodos de safra (soja em Outubro-Dezembro, milho em Janeiro-Março) "
             "e como as filas em Santos e Paranaguá afetam o custo efetivo de importação. "
-            "Seu lema é: 'Lucro está nos detalhes que outros ignoram.'"
+            "Seu lema é: 'Lucro está nos detalhes que outros ignoram.' Se os dados forem escassos, "
+            "você projeta custos baseados na volatilidade recente do frete e óleo combustível."
         ),
         tools=[search_internet],           # Pode buscar fretes atualizados, câmbio, etc.
         llm=get_llm(),
@@ -172,7 +180,7 @@ def create_communication_agent():
             "e-mails de prospecção e negociação em Inglês para fornecedores internacionais (Rússia, Marrocos, China, EUA), "
             "e propostas comerciais detalhadas em Português para compradores brasileiros "
             "(distribuidores regionais, cooperativas agrícolas, indústrias). "
-            "Cada comunicação deve refletir o contexto de mercado e os cálculos de arbitragem."
+            f"Cada comunicação deve refletir fielmente os dados de mercado de {data_atual}, o contexto de mercado e os cálculos de arbitragem."
         ),
         backstory=(
             "Você é um profissional bilíngue com experiência em trade finance e vendas internacionais de commodities. "
