@@ -1,0 +1,24 @@
+# ============================================================
+# requirements.txt
+# Dependências do projeto de arbitragem de fertilizantes
+#
+# Instalar com: pip install -r requirements.txt
+#
+# NOTA: langchain-google-genai e langchain-community foram
+# REMOVIDOS. No CrewAI >= 0.80, o LLM é configurado via
+# crewai.LLM (que usa LiteLLM internamente). Mais simples
+# e sem conflitos de versão.
+# ============================================================
+
+# Framework de multi-agentes (inclui o LiteLLM como dependência)
+crewai>=0.80.0
+
+# Ferramentas nativas do CrewAI (decorator @tool, BaseTool, etc.)
+crewai-tools>=0.17.0
+
+# Carregamento de variáveis do arquivo .env
+python-dotenv>=1.0.0
+
+# Busca no DuckDuckGo — sem necessidade de API key
+# Usado diretamente na ferramenta @tool em agents.py
+duckduckgo-search>=6.0.0
